@@ -102,6 +102,7 @@
 #define OPENNL_H
 
 #include <stdio.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -138,17 +139,17 @@ typedef signed char     NLbyte;
 
 typedef short           NLshort;
 
-typedef int             NLint; 
+typedef int32_t         NLint; 
 
 typedef unsigned char   NLubyte;
 
 typedef unsigned short  NLushort;
 
-typedef unsigned int    NLuint;  
+typedef uint32_t        NLuint;  
 
-typedef long            NLlong;   
+typedef int64_t         NLlong;   
     
-typedef unsigned long   NLulong;   
+typedef uint64_t        NLulong;   
 
 typedef int             NLsizei;
 
@@ -433,7 +434,9 @@ extern "C" {
 #include <cassert>
 
 inline NLuint nlTo32(NLulong x) {
+#ifndef NDEBUG    
     assert(x <= NLulong(std::numeric_limits<NLuint>::max()));
+#endif    
     return NLuint(x);
 }
 
@@ -441,7 +444,7 @@ inline double nlGetVariable(NLulong i) {
     return nlGetVariable(nlTo32(i));
 }
 
-inline void nlSetVariable(NLulong i, double a) {
+inline void nlSetVariable(NLulong i, NLdouble a) {
     nlSetVariable(nlTo32(i), a);
 }
 
@@ -453,11 +456,11 @@ inline NLboolean nlVariableIsLocked(NLulong index) {
     return nlVariableIsLocked(nlTo32(index));
 }
 
-inline void nlCoefficient(NLulong i, double a) {
+inline void nlCoefficient(NLulong i, NLdouble a) {
     nlCoefficient(nlTo32(i), a);
 }
 
-inline void nlAddIJCoefficient(NLulong i, NLulong j, double a) {
+inline void nlAddIJCoefficient(NLulong i, NLulong j, NLdouble a) {
     nlAddIJCoefficient(nlTo32(i), nlTo32(j), a);
 }
 
