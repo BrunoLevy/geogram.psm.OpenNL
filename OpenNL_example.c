@@ -1,6 +1,6 @@
 /*
  * To compile under Linux: 
- *   gcc -O3 -fopenmp -frounding-math -ffp-contract=off --std=c++11 OpenNL_example.c OpenNL_psm.c -o OpenNL_example -ldl -lm
+ *   g++ -O3 -fopenmp -frounding-math -ffp-contract=off --std=c++11 OpenNL_example.c OpenNL_psm/OpenNL_psm.c -o OpenNL_example -ldl -lm
  */
 
 /*
@@ -47,7 +47,7 @@
  *     FRANCE
  *
  */
-#include "OpenNL_psm.h"
+#include "OpenNL_psm/OpenNL_psm.h"
 
 #include <stdio.h>
 #include <string.h>
