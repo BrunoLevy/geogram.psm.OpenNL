@@ -4,7 +4,7 @@
  */
 
 /*
- *  Copyright (c) 2004-2014, Bruno Levy
+ *  Copyright (c) 2000-2022 Inria
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,19 +31,13 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  If you modify this software, you should include a notice giving the
- *  name of the person performing the modification, the date of modification,
- *  and the reason for such modification.
- *
  *  Contact: Bruno Levy
  *
- *     Bruno.Levy@inria.fr
- *     http://www.loria.fr/~levy
+ *     https://www.inria.fr/fr/bruno-levy
  *
- *     ALICE Project
- *     LORIA, INRIA Lorraine, 
- *     Campus Scientifique, BP 239
- *     54506 VANDOEUVRE LES NANCY CEDEX 
+ *     Inria,
+ *     Domaine de Voluceau,
+ *     78150 Le Chesnay - Rocquencourt
  *     FRANCE
  *
  */
@@ -84,8 +78,15 @@ static void test_simple_linear_solve(NLint solver) {
         printf("Using BiCGSTAB\n");                
         break;
     case NL_PERM_SUPERLU_EXT:
-        printf("(with permutation) ");
-	/* Fall through */
+        printf("Using SUPERLU with permutation\n");
+        if(nlInitExtension("SUPERLU")) {
+            printf("...SUPERLU extension successfully initialized\n");
+        } else {
+            printf("...failed to initialize SUPERLU extension\n");
+            printf("Needs Linux/shared librariess/-DGEO_DYNAMIC_LIBS\n");
+            return;
+        }
+        break;
     case NL_SUPERLU_EXT:
         printf("Using SUPERLU\n");
         if(nlInitExtension("SUPERLU")) {
