@@ -988,11 +988,11 @@ void nl_should_not_have_reached(const char* file, int line) {
 /* Timing and number of cores */
 
 #ifdef WIN32
-NLdouble nlCurrentTime() {
+NLdouble nlCurrentTime(void) {
     return (NLdouble)GetTickCount() / 1000.0 ;
 }
 #else
-double nlCurrentTime() {
+double nlCurrentTime(void) {
     clock_t user_clock ;
     struct tms user_tms ;
     user_clock = times(&user_tms) ;
@@ -2284,7 +2284,7 @@ NLMatrix nlMatrixNewFromProduct(
 
 NLContextStruct* nlCurrentContext = NULL;
 
-NLContext nlNewContext() {
+NLContext nlNewContext(void) {
     NLContextStruct* result     = NL_NEW(NLContextStruct);
     result->state               = NL_STATE_INITIAL;
     result->solver              = NL_SOLVER_DEFAULT;
@@ -2341,7 +2341,7 @@ void nlMakeCurrent(NLContext context) {
     nlCurrentContext = (NLContextStruct*)(context);
 }
 
-NLContext nlGetCurrent() {
+NLContext nlGetCurrent(void) {
     return nlCurrentContext;
 }
 
@@ -2360,7 +2360,7 @@ void nlTransition(NLenum from_state, NLenum to_state) {
 
 /* Preconditioner setup and default solver */
 
-static void nlSetupPreconditioner() {
+static void nlSetupPreconditioner(void) {
     /* Check compatibility between solver and preconditioner */
     if(
         nlCurrentContext->solver == NL_BICGSTAB && 
@@ -2440,7 +2440,7 @@ static void nlSetupPreconditioner() {
     }
 }
 
-static NLboolean nlSolveDirect() {
+static NLboolean nlSolveDirect(void) {
     NLdouble* b = nlCurrentContext->b;
     NLdouble* x = nlCurrentContext->x;
     NLuint n = nlCurrentContext->n;
@@ -2467,7 +2467,7 @@ static NLboolean nlSolveDirect() {
     return NL_TRUE;
 }
 
-static NLboolean nlSolveIterative() {
+static NLboolean nlSolveIterative(void) {
     NLboolean use_CUDA = NL_FALSE;
     NLdouble* b = nlCurrentContext->b;
     NLdouble* x = nlCurrentContext->x;
@@ -2540,7 +2540,7 @@ static NLboolean nlSolveIterative() {
     return NL_TRUE;
 }
 
-NLboolean nlDefaultSolver() {
+NLboolean nlDefaultSolver(void) {
     NLboolean result = NL_TRUE;
     nlSetupPreconditioner();
     switch(nlCurrentContext->solver) {
@@ -4041,7 +4041,7 @@ static void host_blas_dtpsv(
     /* TODO: update flops */
 }
 
-NLBlas_t nlHostBlas() {
+NLBlas_t nlHostBlas(void) {
     static NLboolean initialized = NL_FALSE;
     static struct NLBlas blas;
     if(!initialized) {
@@ -5013,7 +5013,7 @@ typedef struct {
     NLdll DLL_handle;
 } SuperLUContext;
 
-static SuperLUContext* SuperLU() {
+static SuperLUContext* SuperLU(void) {
     static SuperLUContext context;
     static NLboolean init = NL_FALSE;
     if(!init) {
@@ -5023,7 +5023,7 @@ static SuperLUContext* SuperLU() {
     return &context;
 }
 
-NLboolean nlExtensionIsInitialized_SUPERLU() {
+NLboolean nlExtensionIsInitialized_SUPERLU(void) {
     return
         SuperLU()->DLL_handle != NULL &&
         SuperLU()->set_default_options != NULL &&
@@ -5503,7 +5503,7 @@ typedef struct {
     NLdll DLL_handle;
 } CHOLMODContext;
 
-static CHOLMODContext* CHOLMOD() {
+static CHOLMODContext* CHOLMOD(void) {
     static CHOLMODContext context;
     static NLboolean init = NL_FALSE;
     if(!init) {
@@ -5513,7 +5513,7 @@ static CHOLMODContext* CHOLMOD() {
     return &context;
 }
 
-NLboolean nlExtensionIsInitialized_CHOLMOD() {
+NLboolean nlExtensionIsInitialized_CHOLMOD(void) {
     return
         CHOLMOD()->DLL_handle != NULL &&
         CHOLMOD()->cholmod_start != NULL &&
@@ -5812,7 +5812,7 @@ typedef struct {
 } ARPACKContext;
 
 
-static ARPACKContext* ARPACK() {
+static ARPACKContext* ARPACK(void) {
     static ARPACKContext context;
     static NLboolean init = NL_FALSE;
     if(!init) {
@@ -5822,7 +5822,7 @@ static ARPACKContext* ARPACK() {
     return &context;
 }
 
-NLboolean nlExtensionIsInitialized_ARPACK() {
+NLboolean nlExtensionIsInitialized_ARPACK(void) {
     return
         ARPACK()->DLL_handle != NULL &&
         ARPACK()->dsaupd != NULL &&
@@ -6338,7 +6338,7 @@ typedef struct {
     FUNPTR_mkl_sparse_optimize mkl_sparse_optimize;
 } MKLContext;
 
-static MKLContext* MKL() {
+static MKLContext* MKL(void) {
     static MKLContext context;
     static NLboolean init = NL_FALSE;
     if(!init) {
@@ -6348,7 +6348,7 @@ static MKLContext* MKL() {
     return &context;
 }
 
-NLboolean nlExtensionIsInitialized_MKL() {
+NLboolean nlExtensionIsInitialized_MKL(void) {
     if(
 	MKL()->DLL_iomp5 == NULL ||
 	MKL()->DLL_mkl_core == NULL ||
@@ -7100,7 +7100,7 @@ typedef struct {
     int devID;
 } CUDAContext;
 
-static CUDAContext* CUDA() {
+static CUDAContext* CUDA(void) {
     static CUDAContext context;
     static NLboolean init = NL_FALSE;
     if(!init) {
@@ -7110,7 +7110,7 @@ static CUDAContext* CUDA() {
     return &context;
 }
 
-NLboolean nlExtensionIsInitialized_CUDA() {
+NLboolean nlExtensionIsInitialized_CUDA(void) {
     if(
 	CUDA()->DLL_cudart == NULL ||
 	CUDA()->cudaDriverGetVersion == NULL ||
@@ -7285,7 +7285,7 @@ static double getDeviceDoublePrecisionGFlops(int device) {
     return result;
 }
 
-static int getBestDeviceID() {
+static int getBestDeviceID(void) {
     int result = -1;
     double fastest_GFlops = 0.0;
     int device_count;
@@ -7927,7 +7927,7 @@ static void cuda_blas_dtpsv(
 }
 
 
-NLBlas_t nlCUDABlas() {
+NLBlas_t nlCUDABlas(void) {
     static NLboolean initialized = NL_FALSE;
     static struct NLBlas blas;
     if(!initialized) {
@@ -7957,7 +7957,7 @@ NLBlas_t nlCUDABlas() {
 
 
 
-static NLSparseMatrix* nlGetCurrentSparseMatrix() {
+static NLSparseMatrix* nlGetCurrentSparseMatrix(void) {
     NLSparseMatrix* result = NULL;
     switch(nlCurrentContext->matrix_mode) {
 	case NL_STIFFNESS_MATRIX: {
@@ -7978,7 +7978,7 @@ static NLSparseMatrix* nlGetCurrentSparseMatrix() {
 
 
 
-static NLCRSMatrix* nlGetCurrentCRSMatrix() {
+static NLCRSMatrix* nlGetCurrentCRSMatrix(void) {
     NLCRSMatrix* result = NULL;
     switch(nlCurrentContext->matrix_mode) {
 	case NL_STIFFNESS_MATRIX: {
@@ -8428,7 +8428,7 @@ NLboolean nlVariableIsLocked(NLuint index) {
 
 /* System construction */
 
-static void nlVariablesToVector() {
+static void nlVariablesToVector(void) {
     NLuint n=nlCurrentContext->n;
     NLuint k,i,index;
     NLdouble value;
@@ -8446,7 +8446,7 @@ static void nlVariablesToVector() {
     }
 }
 
-static void nlVectorToVariables() {
+static void nlVectorToVariables(void) {
     NLuint n=nlCurrentContext->n;
     NLuint k,i,index;
     NLdouble value;
@@ -8465,7 +8465,7 @@ static void nlVectorToVariables() {
 }
 
 
-static void nlBeginSystem() {
+static void nlBeginSystem(void) {
     NLuint k;
     
     nlTransition(NL_STATE_INITIAL, NL_STATE_SYSTEM);
@@ -8501,11 +8501,11 @@ static void nlBeginSystem() {
     nlCurrentContext->has_matrix_pattern = NL_FALSE;
 }
 
-static void nlEndSystem() {
+static void nlEndSystem(void) {
     nlTransition(NL_STATE_MATRIX_CONSTRUCTED, NL_STATE_SYSTEM_CONSTRUCTED);    
 }
 
-static void nlInitializeMSystem() {
+static void nlInitializeMSystem(void) {
     NLuint i;
     NLuint n = nlCurrentContext->nb_variables;
 
@@ -8571,7 +8571,7 @@ static void nlInitializeMSystem() {
     }
 }
 
-static void nlInitializeMCRSMatrixPattern() {
+static void nlInitializeMCRSMatrixPattern(void) {
     NLuint n = nlCurrentContext->n;
     nlCurrentContext->M = (NLMatrix)(NL_NEW(NLCRSMatrix));
     if(nlCurrentContext->symmetric) {
@@ -8586,7 +8586,7 @@ static void nlInitializeMCRSMatrixPattern() {
     nlCurrentContext->has_matrix_pattern = NL_TRUE;
 }
 
-static void nlInitializeMSparseMatrix() {
+static void nlInitializeMSparseMatrix(void) {
     NLuint n = nlCurrentContext->n;
     NLenum storage = NL_MATRIX_STORE_ROWS;
 
@@ -8613,7 +8613,7 @@ static void nlInitializeMSparseMatrix() {
     );
 }
 
-static void nlEndMatrix() {
+static void nlEndMatrix(void) {
 #ifdef NL_DEBUG    
     NLuint i;
     NLuint_big jj;
@@ -8653,7 +8653,7 @@ static void nlEndMatrix() {
 #endif    
 }
 
-static void nlBeginRow() {
+static void nlBeginRow(void) {
     nlTransition(NL_STATE_MATRIX, NL_STATE_ROW);
     nlRowColumnZero(&nlCurrentContext->af);
     nlRowColumnZero(&nlCurrentContext->al);
@@ -8693,7 +8693,7 @@ static void nlNormalizeRow(NLdouble weight) {
     nlScaleRow(weight / norm);
 }
 
-static void nlEndRow() {
+static void nlEndRow(void) {
     NLRowColumn*    af = &nlCurrentContext->af;
     NLRowColumn*    al = &nlCurrentContext->al;
     NLSparseMatrix* M  = nlGetCurrentSparseMatrix();
@@ -8903,7 +8903,7 @@ void nlEnd(NLenum prim) {
 
 /* nlSolve() driver routine */
 
-NLboolean nlSolve() {
+NLboolean nlSolve(void) {
     NLboolean result;
     nlCheckState(NL_STATE_SYSTEM_CONSTRUCTED);
     nlCurrentContext->start_time = nlCurrentTime();
@@ -9020,7 +9020,7 @@ void nlEigenSolverParameteri(
     }
 }
 
-void nlEigenSolve() {
+void nlEigenSolve(void) {
     if(nlCurrentContext->eigen_value == NULL) {
 	nlCurrentContext->eigen_value = NL_NEW_ARRAY(
 	    NLdouble,nlCurrentContext->nb_systems
