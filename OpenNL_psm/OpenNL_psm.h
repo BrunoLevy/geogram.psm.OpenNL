@@ -17,7 +17,7 @@
  *  * Neither the name of the ALICE Project-Team nor the names of its
  *  contributors may be used to endorse or promote products derived from this
  *  software without specific prior written permission.
- * 
+ *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -69,21 +69,21 @@
 #endif
 
 #ifdef WIN32
-    #ifdef NL_SHARED_LIBS
-        #ifdef NL_EXPORTS
-            #define NLAPIENTRY __declspec( dllexport )
-        #else
-            #define NLAPIENTRY __declspec( dllimport )
-        #endif
-    #else
-        #define NLAPIENTRY
-    #endif
+#ifdef NL_SHARED_LIBS
+#ifdef NL_EXPORTS
+#define NLAPIENTRY __declspec( dllexport )
 #else
-    #ifdef NL_SHARED_LIBS
-        #define NLAPIENTRY __attribute__ ((visibility("default")))
-    #else
-        #define NLAPIENTRY
-    #endif
+#define NLAPIENTRY __declspec( dllimport )
+#endif
+#else
+#define NLAPIENTRY
+#endif
+#else
+#ifdef NL_SHARED_LIBS
+#define NLAPIENTRY __attribute__ ((visibility("default")))
+#else
+#define NLAPIENTRY
+#endif
 #endif
 
 #ifdef __GNUC__
@@ -112,7 +112,7 @@ extern "C" {
 
 #define NLAPI
 
-/* 
+/*
  * Deactivate warnings about documentation
  * We do that, because CLANG's doxygen parser does not know
  * some doxygen commands that we use (retval, copydoc) and
@@ -121,45 +121,45 @@ extern "C" {
 
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunknown-pragmas"
-#pragma clang diagnostic ignored "-Wdocumentation"        
+#pragma clang diagnostic ignored "-Wdocumentation"
 #pragma clang diagnostic ignored "-Wdocumentation-unknown-command"
 #endif
-    
-    
 
-typedef unsigned int    NLenum;
 
-typedef unsigned char   NLboolean;
 
-typedef unsigned int    NLbitfield;
+    typedef unsigned int    NLenum;
 
-typedef void            NLvoid;
+    typedef unsigned char   NLboolean;
 
-typedef signed char     NLbyte;
+    typedef unsigned int    NLbitfield;
 
-typedef short           NLshort;
+    typedef void            NLvoid;
 
-typedef int32_t         NLint; 
+    typedef signed char     NLbyte;
 
-typedef unsigned char   NLubyte;
+    typedef short           NLshort;
 
-typedef unsigned short  NLushort;
+    typedef int32_t         NLint;
 
-typedef uint32_t        NLuint;  
+    typedef unsigned char   NLubyte;
 
-typedef int64_t         NLlong;   
-    
-typedef uint64_t        NLulong;   
+    typedef unsigned short  NLushort;
 
-typedef int             NLsizei;
+    typedef uint32_t        NLuint;
 
-typedef float           NLfloat;
+    typedef int64_t         NLlong;
 
-typedef double          NLdouble;
+    typedef uint64_t        NLulong;
 
-typedef void(*NLfunc)(void);
+    typedef int             NLsizei;
 
-typedef void* NLContext; 
+    typedef float           NLfloat;
+
+    typedef double          NLdouble;
+
+    typedef void(*NLfunc)(void);
+
+    typedef void* NLContext;
 
 #define NL_FALSE   0x0
 #define NL_TRUE    0x1
@@ -191,11 +191,11 @@ typedef void* NLContext;
 
 #define NL_GFLOPS           0x10c
 
-#define NL_NNZ              0x10d    
+#define NL_NNZ              0x10d
 
 
 #define NL_NB_SYSTEMS       0x10e
-    
+
 
 #define NL_SOLVER_DEFAULT        0x000
 
@@ -221,7 +221,7 @@ typedef void* NLContext;
 
 
 #define NL_NO_VARIABLES_INDIRECTION 0x402
-    
+
 
     NLAPI NLContext NLAPIENTRY nlNewContext(void);
 
@@ -236,7 +236,7 @@ typedef void* NLContext;
     NLAPI NLboolean NLAPIENTRY nlExtensionIsInitialized(const char* extension);
 
     NLAPI void NLAPIENTRY nlInitialize(int argc, char** argv);
-    
+
 
     NLAPI void NLAPIENTRY nlSolverParameterd(NLenum pname, NLdouble param);
 
@@ -250,7 +250,7 @@ typedef void* NLContext;
 
     NLAPI void NLAPIENTRY nlGetIntegervL(NLenum pname, NLlong* params);
 
-    
+
     NLAPI void NLAPIENTRY nlEnable(NLenum pname);
 
     NLAPI void NLAPIENTRY nlDisable(NLenum pname);
@@ -275,13 +275,13 @@ typedef void* NLContext;
 
 
     NLAPI void NLAPIENTRY nlMultiSetVariable(
-	NLuint i, NLuint k, NLdouble value
+        NLuint i, NLuint k, NLdouble value
     );
-    
+
     NLAPI NLdouble NLAPIENTRY nlGetVariable(NLuint i);
 
     NLAPI NLdouble NLAPIENTRY nlMultiGetVariable(NLuint i, NLuint k);
-    
+
     NLAPI void NLAPIENTRY nlLockVariable(NLuint index);
 
     NLAPI void NLAPIENTRY nlUnlockVariable(NLuint index);
@@ -303,29 +303,37 @@ typedef void* NLContext;
 
 
     NLAPI void NLAPIENTRY nlSetRowLength(NLuint i, NLuint n);
-    
+
     NLAPI void NLAPIENTRY nlCoefficient(NLuint i, NLdouble value);
 
 
 
-    NLAPI void NLAPIENTRY nlAddIJCoefficient(
+    NLAPI NLulong NLAPIENTRY nlAddIJCoefficient(
         NLuint i, NLuint j, NLdouble value
     );
 
+    NLAPI void NLAPIENTRY nlAddIJCoefficientAt(
+        NLuint i, NLuint j, NLdouble value, NLulong index
+    );
+
+
+    NLAPI void NLAPIENTRY nlSetIJCoefficientAtRowOffset(
+        NLuint i, NLuint j, NLdouble value, NLuint row_offset
+    );
 
     NLAPI void NLAPIENTRY nlAddIRightHandSide(NLuint i, NLdouble value);
 
     NLAPI void NLAPIENTRY nlMultiAddIRightHandSide(
-	NLuint i, NLuint k, NLdouble value
+        NLuint i, NLuint k, NLdouble value
     );
-    
+
     NLAPI void NLAPIENTRY nlRightHandSide(NLdouble value);
 
 
     NLAPI void NLAPIENTRY nlMultiRightHandSide(NLuint k, NLdouble value);
-    
+
     NLAPI void NLAPIENTRY nlRowScaling(NLdouble value);
-    
+
 
     NLAPI NLboolean NLAPIENTRY nlSolve(void);
 
@@ -336,35 +344,35 @@ typedef void* NLContext;
 #define NL_VARIABLES_BUFFER 0x1000
 
     NLAPI void NLAPIENTRY nlBindBuffer(
-	NLenum buffer, NLuint k, void* addr, NLuint stride
+        NLenum buffer, NLuint k, void* addr, NLuint stride
     );
 
-    
+
 
 #define NL_STIFFNESS_MATRIX 0x3001
 
 #define NL_MASS_MATRIX 0x3002
 
-NLAPI void NLAPIENTRY nlMatrixMode(NLenum matrix);
-    
+    NLAPI void NLAPIENTRY nlMatrixMode(NLenum matrix);
+
 #define NL_NB_EIGENS       NL_NB_SYSTEMS
 
 #define NL_EIGEN_MAX_ITERATIONS NL_MAX_ITERATIONS
-    
+
 #define NL_EIGEN_THRESHOLD NL_THRESHOLD
 
 #define NL_EIGEN_SOLVER 0x2000
-    
+
 #define NL_EIGEN_SHIFT 0x2001
 
 #define NL_EIGEN_SHIFT_INVERT 0x2002
-    
+
     NLAPI void NLAPIENTRY nlEigenSolverParameterd(
-	NLenum pname, NLdouble val
+        NLenum pname, NLdouble val
     );
 
     NLAPI void NLAPIENTRY nlEigenSolverParameteri(
-	NLenum pname, NLint val
+        NLenum pname, NLint val
     );
 
     NLAPI void NLAPIENTRY nlEigenSolve(void);
@@ -376,10 +384,16 @@ NLAPI void NLAPIENTRY nlMatrixMode(NLenum matrix);
     typedef int (*NLprintfFunc)(const char* format, ...);
 
     typedef int (*NLfprintfFunc)(FILE* out, const char* format, ...);
-    
+
     NLAPI void NLAPIENTRY nlPrintfFuncs(NLprintfFunc f1, NLfprintfFunc f2);
-    
-    
+
+
+    struct NLMatrixStruct;
+
+    typedef struct NLMatrixStruct* NLMatrix;
+
+    NLAPI NLMatrix NLAPIENTRY nlGetCurrentMatrix(void);
+
 
 #ifdef __cplusplus
 }
@@ -387,7 +401,7 @@ NLAPI void NLAPIENTRY nlMatrixMode(NLenum matrix);
 
 
 
-    
+
 #endif
 
 /******* extracted from nl_ext.h *******/
@@ -399,7 +413,7 @@ NLAPI void NLAPIENTRY nlMatrixMode(NLenum matrix);
 extern "C" {
 #endif
 
-    
+
 #define NL_SUPERLU_EXT           0x210
 #define NL_PERM_SUPERLU_EXT      0x211
 #define NL_SYMMETRIC_SUPERLU_EXT 0x212
@@ -409,18 +423,17 @@ extern "C" {
 #define NL_AMGCL_EXT             0x216
 
 #define NL_CUDA_PRECOND_ILU_EXT    0x220
-    
+
 #ifdef __cplusplus
 }
 #endif
-    
-#endif
 
+#endif
 
 /******* extracted from nl_64.h *******/
 
 /*
- * Wrappers to avoid warnings when using OpenNL functions with 64 bit 
+ * Wrappers to avoid warnings when using OpenNL functions with 64 bit
  * indices. Note: dimension of matrix still limited to 32 bit indices
  * (but not NNZ).
  */
@@ -434,9 +447,9 @@ extern "C" {
 #include <cassert>
 
 inline NLuint nlTo32(NLulong x) {
-#ifndef NDEBUG    
+#ifndef NDEBUG
     assert(x <= NLulong(std::numeric_limits<NLuint>::max()));
-#endif    
+#endif
     return NLuint(x);
 }
 
@@ -460,8 +473,24 @@ inline void nlCoefficient(NLulong i, NLdouble a) {
     nlCoefficient(nlTo32(i), a);
 }
 
-inline void nlAddIJCoefficient(NLulong i, NLulong j, NLdouble a) {
-    nlAddIJCoefficient(nlTo32(i), nlTo32(j), a);
+inline NLulong nlAddIJCoefficient(NLulong i, NLulong j, NLdouble a) {
+    return nlAddIJCoefficient(nlTo32(i), nlTo32(j), a);
+}
+
+inline void nlAddIRightHandSide(NLulong i, NLdouble a) {
+    nlAddIRightHandSide(nlTo32(i), a);
+}
+
+inline void nlAddIJCoefficientAt(
+    NLulong i, NLulong j, NLdouble a, NLulong pos
+) {
+    nlAddIJCoefficientAt(nlTo32(i), nlTo32(j), a, pos);
+}
+
+inline void nlSetIJCoefficientAtRowOffset(
+    NLulong i, NLulong j, NLdouble a, NLulong row_offset
+) {
+    nlSetIJCoefficientAtRowOffset(nlTo32(i), nlTo32(j), a, nlTo32(row_offset));
 }
 
 inline double nlGetEigenValue(int i) {
@@ -479,4 +508,3 @@ inline double nlMultiGetVariable(NLulong i, NLulong j) {
 #endif
 
 #endif
-
